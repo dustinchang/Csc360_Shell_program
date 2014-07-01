@@ -41,20 +41,6 @@ void prompt(char* host, char* cwd, char* scan_prompt) {
 }
 
 int main() {
-	printf("%s\n", "cscShell bootup");
-	/*char* host = (char*) malloc(sizeof(char)*100);
-	printf("%s\n", "BEFORE");
-	printf("%s\n", getenv("PATH"));
-	printf("%s\n", "AFTER");
-	printf("%s\n", getenv("HOME"));
-
-	gethostname(host, 100);
-	printf("HOST: %s\n", host);	*/	/*Is the name of the machine*//*
-	scanf("%s", scan_prompt);  Don't need
-
-	char* dir = "newdir";
-	mkdir(dir);
-*/
 	/*Initializations*/
 	char* host = (char*) malloc(sizeof(char)* 100);
 	char* cwd = (char*) malloc(sizeof(char)* 100);
@@ -64,6 +50,7 @@ int main() {
 	int tokD;	/*Used for testing|Possbily use to keep track of how many cmd's*/
 	tokD = 0;
 	char* pth = (char*) malloc(sizeof(char)* 100);
+	char* pth_cpy = (char*) malloc(sizeof(char)* 100);
 	char* path_array[100];	/*Might not need*/
 	int path_count;			/*Used to keep track of number of paths*/
 	path_count = 0;
@@ -74,6 +61,26 @@ int main() {
 	char* token_cat = (char*) malloc(sizeof(char)* 100);	/*Need for strcat*/
 	int acc;	/*For TESTING*/
 	acc = 0;
+	int brek;	/*To know if a break happened*/
+	brek = 0;
+
+	/*LOOP*/
+	while(1) {/*For while*/
+	host = (char*) malloc(sizeof(char)* 100);
+	cwd = (char*) malloc(sizeof(char)* 100);
+	scan_prompt = (char*) malloc(sizeof(char)* 100);
+	token = (char*) malloc(sizeof(char)* 100);
+	tokD = 0;
+	pth = (char*) malloc(sizeof(char)* 100);
+	path_count = 0;
+	cat = (char*) malloc(sizeof(char)* 100);
+	token_cat = (char*) malloc(sizeof(char)* 100);
+	acc = 0;
+	brek = 0;	/*Still need to implement but fix loop first!!!!!!!!!!!!!!!*/
+
+
+
+	printf("%s\n", "cscShell bootup");
 
 	/*Prompt up to here*/
 	prompt(host, cwd, scan_prompt);
@@ -89,8 +96,9 @@ int main() {
 
 	/*Find exec file corresponding to cmd*/
 	pth = getenv("PATH");
-	printf("This Path#%s\n", pth);
-	path_array[path_count] = strtok(pth, ":");
+	strcpy(pth_cpy, pth);	/*Copy path so not overwritten*/
+	printf("This Path#%s\nCopy Path#%s\n", pth, pth_cpy);
+	path_array[path_count] = strtok(pth_cpy, ":");
 	/*printf("FIRST=%s\n", path_array[path_count]);*/
 	while(path_array[path_count] != NULL) {
 		printf("P%d=%s\n", path_count, path_array[path_count]);
@@ -138,11 +146,11 @@ int main() {
 					printf("I'm pear:%d\n", pid);
 					while(pid != wait(0));
 					printf("After while=%d\n", pid);
-					return 0;
+					break;		/*Maybe continue*/
+					/*return 0;*/
 				}
-				/*return 0;*/
 
-				
+
 			}
 
 			printf("Token before strtok:%s\t", token);
@@ -156,13 +164,12 @@ int main() {
 			}
 		}
 		/*path_track++;*/
-		printf("OUTTTT\n");
+		printf("OUTTTT pCount:%d\tpTotal:%d\n", path_count, path_count_total);
 		path_count++;
-	}
+	}/*Outer while loop for exe part*/
 
 
-
-
+}/*For while*/
 	printf("%s\n", "DONE");
 	return 0;
 }
