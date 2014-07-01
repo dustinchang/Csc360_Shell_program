@@ -47,6 +47,8 @@ int main() {
 	char* scan_prompt = (char*) malloc(sizeof(char)* 100);
 	char* token = (char*) malloc(sizeof(char)* 100);
 	char* cmd_in[8];
+	char* cmd_in_cpy = (char*) malloc(sizeof(char)* 100);
+	char* cmd_in_cpy2 = (char*) malloc(sizeof(char)* 100);
 	int tokD;	/*Used for testing|Possbily use to keep track of how many cmd's*/
 	tokD = 0;
 	char* pth = (char*) malloc(sizeof(char)* 100);
@@ -58,18 +60,26 @@ int main() {
 	int path_track;			/*Keep track of tokening through paths*/
 	char* cat = (char*) malloc(sizeof(char)* 100);		/*Need for strcat*/
 	char* slash = "/";
+	char* spac = " ";
 	char* token_cat = (char*) malloc(sizeof(char)* 100);	/*Need for strcat*/
 	int acc;	/*For TESTING*/
 	acc = 0;
 	int brek;	/*To know if a break happened*/
 	brek = 0;
+	int leng;
+	int i;
 
 	/*LOOP*/
 	while(1) {/*For while*/
+	for(i=0; i<8; i++) {
+		cmd_in[i] = (char*) malloc(sizeof(char)* 100);
+	}
 	host = (char*) malloc(sizeof(char)* 100);
 	cwd = (char*) malloc(sizeof(char)* 100);
 	scan_prompt = (char*) malloc(sizeof(char)* 100);
 	token = (char*) malloc(sizeof(char)* 100);
+	cmd_in_cpy = (char*) malloc(sizeof(char)* 100);		/*Might not need*/
+	cmd_in_cpy2 = (char*) malloc(sizeof(char)* 100);
 	tokD = 0;
 	pth = (char*) malloc(sizeof(char)* 100);
 	path_count = 0;
@@ -78,21 +88,64 @@ int main() {
 	acc = 0;
 	brek = 0;	/*Still need to implement but fix loop first!!!!!!!!!!!!!!!*/
 
-
-
+	//cmd_in[tokD] = (char*) malloc(sizeof(char)* 100);;
+	//strcpy(cmd_in[tokD], "HeyaaaBC");
 	printf("%s\n", "cscShell bootup");
+	//printf("Yo:%sson\n", cmd_in[tokD]);
 
 	/*Prompt up to here*/
 	prompt(host, cwd, scan_prompt);
 
-	/*Parsing*/
-	cmd_in[tokD] = strtok(scan_prompt, " ");
-	while(cmd_in[tokD] != NULL) {
-		printf("cmd%d:%s\n",tokD, cmd_in[tokD]);
+	/*Parsing*/		/*FIX*/
+	/*cmd_in[tokD] = strtok(scan_prompt, " ");
+	strcpy(cmd_in_cpy, cmd_in[tokD]);*/
+	cmd_in_cpy = strtok(scan_prompt, " ");
+	strcpy(cmd_in[tokD], cmd_in_cpy);
+	while(cmd_in_cpy != NULL) {
+		printf("cmd%d:%s\tcpy=%s\n",tokD, cmd_in[tokD], cmd_in_cpy);
+		cmd_in_cpy = strtok(NULL, " ");
+		if(cmd_in_cpy != NULL) {
+			leng = strlen(cmd_in_cpy);
+		} else {
+			printf("%s\n", "HEY YOU");
+			tokD++;
+			//strcat(cmd_in[tokD], cmd_in_cpy);
+			cmd_in[tokD] = NULL;
+			break;
+		}
+		if(cmd_in_cpy[0] == '\"') {
+			printf("%s\n", "YES there is a Qoute at start!");
+			if(cmd_in_cpy[leng-1] == '\"') {
+				printf("%s\n", "Qoute at Back!");
+			} else {
+				printf("%s\n", "ELSE QOUTE");
+				//tokD++;	/*Need another copy to hold for cmd_in_cpy*/
+				strcpy(cmd_in_cpy2, cmd_in_cpy);	/*REWRTIE*/
+				brek = 1;
+				continue;
+			}
+		}
+		printf("HERE\n");
+		if(brek == 1) {
+			if(cmd_in_cpy[leng-1] == '\"') {
+				strcat(cmd_in_cpy2, spac);
+				strcat(cmd_in_cpy2, cmd_in_cpy);
+				tokD++;
+				strcpy(cmd_in[tokD], cmd_in_cpy2);	/*Problem*/
+				brek = 0;
+				continue;
+			} else {
+				strcat(cmd_in_cpy2, spac);
+				strcat(cmd_in_cpy2, cmd_in_cpy);
+				continue;
+			}
+
+		}
 		tokD++;
-		cmd_in[tokD] = strtok(NULL, " ");
+		strcpy(cmd_in[tokD], cmd_in_cpy);
 	}
 	printf("cmd:%d Last:%s\n",tokD, cmd_in[tokD]);	/*TESTING for NULL*/
+
 
 	/*Find exec file corresponding to cmd*/
 	pth = getenv("PATH");
