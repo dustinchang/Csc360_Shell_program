@@ -31,7 +31,7 @@ void prompt(char* host, char* cwd, char* scan_prompt) {
 	getcwd(cwd, 100);
 	printf("%s%s$\n", host, cwd);		/*Name/CurrWorkingDir*/
 	fgets(scan_prompt, 100, stdin);		/*Cmd stored in scan_prompt*/
-	int len;
+	int len;							/*These lines for testing, except chomp*/
 	len = strlen(scan_prompt);
 	if(scan_prompt[len-1] == '\n') {
 		printf("%s\n", "YES THERE IS A NEWLINE");
@@ -88,8 +88,6 @@ int main() {
 	printf("cmd:%d Last:%s\n",tokD, cmd_in[tokD]);	/*TESTING for NULL*/
 
 	/*Find exec file corresponding to cmd*/
-	/*PLAN: Token path into an array then token through that and just overwrite token*/
-	/*token down path_count and then on loop it's already back to 0*/
 	pth = getenv("PATH");
 	printf("This Path#%s\n", pth);
 	path_array[path_count] = strtok(pth, ":");
@@ -127,10 +125,24 @@ int main() {
 			printf("acc=%d\tstrlen=%d", acc, (int)strlen(cat));*/
 			if(access(cat, F_OK) == 0) {
 				/*Do code for if it matches*/
-				printf("The file exists in:%s\n", cat);
+				printf("The file exists in path:%s\n", cat);
+				/*NOW MAKE A CHILD PROCESS TO EXECUTE FILE/OPTIONS/ARGS*/
+				pid_t pid = fork();
+				printf("I'm a fork pid:%d\n", pid);
+				if(pid == 0) {
+					printf("I'm a child:%d\n", pid);
+					if(execv(cat, cmd_in) < 0) {
+						perror("Error occured at execv");
+					}
+				} else {
+					printf("I'm pear:%d\n", pid);
+					while(pid != wait(0));
+					printf("After while=%d\n", pid);
+					return 0;
+				}
 				/*return 0;*/
 
-
+				
 			}
 
 			printf("Token before strtok:%s\t", token);
